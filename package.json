@@ -1,0 +1,21 @@
+{
+    "name": "dota2_api",
+    "version": "1.0.0",
+    "description": "",
+    "main": "",
+    "scripts": {
+        "start:api": "nodemon app.js",
+        "test": "jest --env node",
+        "dev": "node app.js & npm test"
+    },
+    "author": "",
+    "licence": "",
+    "dependencies": {
+        "axios": "^0.24.0",
+        "express": "^4.17.1",
+        "pg-promise": "^10.11.1"
+    },
+    "devDependencies": {
+        "jest": "^27.3.1"
+    }
+}
