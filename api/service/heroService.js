@@ -1,7 +1,7 @@
 const heroRepository = require("../repository/heroRepository");
 
 exports.getHeroes = function (req) {
-  const params = buildRequestParams(req);
+  const params = buildRequestParams(req.query);
   return heroRepository.getHeroes(params).then((response) => {
     const result =
       response.length == 0
@@ -22,9 +22,16 @@ exports.getHeroById = function (req) {
 };
 
 exports.createHero = function (req) {
-  //validate hero body before create;
-  heroRepository.createHero(req.body);
-  return buildResponseMessage("Heroi cadastrado na base de dados", 200);
+  try {
+    isLaneInputInvalid(req.body.lane);
+    isDifficultInputInvalid(req.body.difficult);
+    isFieldArrayInvalid(req.body.skills || [], "Skills");
+    isFieldArrayInvalid(req.body.skins || [], "Skins");
+    heroRepository.createHero(req.body);
+    return buildResponseMessage("Heroi cadastrado na base de dados", 200);
+  } catch (error) {
+    return error;
+  }
 };
 
 exports.editHero = function (req) {
@@ -53,14 +60,47 @@ function findHeroById(id) {
   return heroRepository.getHeroById(id);
 }
 
-function buildRequestParams(req) {
-  const params = {
-    lane: req.query.lane || "%",
-    difficult: req.query.difficult || "%",
-    offset: req.query.offset || 0,
-    limit: req.query.limit || 20,
+function inputError(message) {
+  const error = {
+    message: message,
+    status: 400,
   };
+  return error;
+}
 
+function isLaneInputInvalid(lane) {
+  if (lane !== "safe" && lane !== "mid" && lane !== "off") {
+    throw new inputError("Lane informada é inválida, vazia ou não definida");
+  }
+}
+
+function isDifficultInputInvalid(difficult) {
+  if (difficult !== "easy" && difficult !== "medium" && difficult !== "hard") {
+    throw new inputError(
+      "Difficult informada é inválida, vazia ou não definida"
+    );
+  }
+}
+
+function isFieldArrayInvalid(field, fieldName) {
+  if (field.length === 0) {
+    throw new inputError(
+      "Campo '" +
+        fieldName +
+        "' não é um Array de '" +
+        fieldName +
+        "', não foi definido ou está vazio"
+    );
+  }
+}
+
+function buildRequestParams(query) {
+  const params = {
+    lane: query.lane || "%",
+    difficult: query.difficult || "%",
+    offset: query.offset || 0,
+    limit: query.limit || 20,
+  };
   return params;
 }
 
