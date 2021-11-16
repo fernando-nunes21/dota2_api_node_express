@@ -110,5 +110,3 @@ function buildResponseMessage(message, status) {
     status: status,
   });
 }
-
-//aprimorar transformando em função a logica do retorno do findHeroById
