@@ -1,6 +1,6 @@
 const database = require("../connection/database");
 
-exports.getHeroes = async function (params) {
+exports.getHeroes = function (params) {
   return database.query(
     "SELECT * FROM heroes WHERE 1=1 AND lane LIKE $1 AND difficult LIKE $2 OFFSET $3 LIMIT $4",
     [params?.lane, params?.difficult, params.offset, params.limit]
